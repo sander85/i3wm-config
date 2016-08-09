@@ -52,7 +52,7 @@ case "$1" in
 	reboot)
 		close_safely && systemctl reboot
 	;;
-	shutdown)
+	poweroff)
 		close_safely && systemctl poweroff
 	;;
 	*)
