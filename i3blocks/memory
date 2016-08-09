@@ -1,5 +1,20 @@
 #!/bin/bash
 
+<< How_to_use
+
+[memory]
+label=RAM
+interval=30
+command=~/.i3wm-config/i3blocks/$BLOCK_NAME
+
+[memory]
+label=SWAP
+instance=swap
+interval=30
+command=~/.i3wm-config/i3blocks/$BLOCK_NAME
+
+How_to_use
+
 TYPE="${BLOCK_INSTANCE:-mem}"
 
 mem_total=$(awk '/^MemTotal:/ { mem_total=$2 } END { print mem_total }' /proc/meminfo)
