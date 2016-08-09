@@ -18,6 +18,24 @@
 
 #------------------------------------------------------------------------
 
+<< How_to_use
+
+[volume]
+label=♪
+instance=Master
+command=~/.i3wm-config/i3blocks/$BLOCK_NAME
+interval=once
+signal=10
+
+In i3's conf use something like this:
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 +5% && pkill -RTMIN+10 i3blocks
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -5% && pkill -RTMIN+10 i3blocks
+bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle && pkill -RTMIN+10 i3blocks
+
+Notice: signal=10 and -RTMIN+10
+
+How_to_use
+
 # The second parameter overrides the mixer selection
 # For PulseAudio users, use "pulse"
 # For Jack/Jack2 users, use "jackplug"
