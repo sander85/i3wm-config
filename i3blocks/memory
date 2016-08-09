@@ -1,0 +1,28 @@
+#!/bin/bash
+
+TYPE="${BLOCK_INSTANCE:-mem}"
+
+mem_total=$(awk '/^MemTotal:/ { mem_total=$2 } END { print mem_total }' /proc/meminfo)
+mem_free=$(awk '/^MemFree:/ { mem_free=$2 } /^Buffers:/ { mem_free+=$2 } /^Cached:/ { mem_free+=$2 } END { print mem_free }' /proc/meminfo)
+swap_total=$(awk '/^SwapTotal:/ { swap_total=$2 } END { print swap_total }' /proc/meminfo)
+swap_free=$(awk '/^SwapFree:/ { swap_free=$2 } END { print swap_free }' /proc/meminfo)
+
+if [ $TYPE = "swap" ]; then
+	echo $swap_total $swap_free | awk '{printf "%.2fGiB\n", ($1-$2)/1024/1024}'
+	swap_free_percentage=$(echo $swap_total $swap_free|awk '{printf "%.0f", $2*100/$1}')
+	if [ $swap_free_percentage -lt 7 ]; then
+		exit 33
+	fi
+	if [ $swap_free_percentage -lt 15 ]; then
+		echo; echo \#FFCC00
+	fi
+else
+	echo  $mem_free | awk '{printf "%.2fGiB\n", $1/1024/1024}'
+	mem_free_percentage=$(echo $mem_total $mem_free|awk '{printf "%.0f", $2*100/$1}')
+	if [ $mem_free_percentage -lt 7 ]; then
+		exit 33
+	fi
+	if [ $mem_free_percentage -lt 15 ]; then
+		echo; echo \#FFCC00
+	fi
+fi
