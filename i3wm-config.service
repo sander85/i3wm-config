@@ -1,0 +1,11 @@
+[Unit]
+Description=Merges i3's base conf with a local one
+After=systemd-logind.service
+
+[Service]
+User=username
+ExecStart=/home/username/.i3wm-config/bin/merge-conf.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
