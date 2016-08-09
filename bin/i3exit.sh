@@ -2,11 +2,18 @@
 
 # Requirements: i3lock, wmctrl
 
-# Must be PNG file 
-wallpaper="~/.i3wm-config/screensaver/Extra-Background-006.png"
+cmd="i3lock"
+# Check if the 2nd argument is file
+if [ $# -eq 2 ] && [ -f $2 ]; then
+	mime=$(file --mime-type $2 | cut -d \  -f2)
+	# Check if it's a PNG file
+	if [ $(echo $mime|grep -i png|wc -l) -eq 1 ]; then
+		cmd="i3lock -i $2"
+	fi
+fi
 
 lock() {
-	i3lock -ti $wallpaper
+	$cmd
 }
 
 close_safely() {
