@@ -1,1 +1,3 @@
 local
+# Ignore dex (https://github.com/jceb/dex)
+dex
