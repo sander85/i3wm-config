@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Requirements: zenity, xdotool, wmctrl
+
+<< How_to_use
+
+[time]
+command=~/.i3wm-config/i3blocks/$BLOCK_NAME
+interval=1
+
+How_to_use
+
+case $BLOCK_BUTTON in
+	1) zenity --calendar > /dev/null ;; # left click, open calendar with zenity
+	3) i3-msg workspace 3 > /dev/null && xdotool key --window $(wmctrl -lx|grep Mail.Thunderbird|awk '{print $1}') Ctrl+Shift+c ;;  # right click, switch to Thunderbird's calendar view
+esac
+
+date '+%d.%m.%Y %H:%M:%S'
+date '+%H:%M:%S'
+echo \#00C000
+
+h=$(date '+%H')
+
+if [ $h -lt 8 ]; then
+	exit 33
+fi
