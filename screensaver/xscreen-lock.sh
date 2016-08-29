@@ -16,7 +16,7 @@ if [ $# -eq 1 ] && [ -f $1 ]; then
 	mime=$(file --mime-type $1 | cut -d \  -f2)
 	# Check if it's a PNG file
 	if [ $(echo $mime|grep -i png|wc -l) -eq 1 ]; then
-		cmd="i3lock -i $1"
+		cmd="i3lock -ti $1"
 	fi
 fi
 
