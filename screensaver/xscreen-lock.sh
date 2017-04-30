@@ -1,16 +1,18 @@
 #!/bin/bash
 
-# Set timeout length
-timeout="300"
-
 # Requirements: xssstate, i3lock
+
+# Set timeout for screensaver
+timeout="300"
+# Set timeout for turning off monitor(s)
+otimeout="60"
 
 if [ -f "/tmp/xscreen-lock" ]; then
 	exit 0
 fi
 touch /tmp/xscreen-lock
 
-# Use xset s $time to control the timeout when this will run.
+# Use xset s $timeout to control the timeout when this will run.
 xset s $timeout
 
 cmd="i3lock"
@@ -33,12 +35,15 @@ do
 		xset s $timeout
 	fi
 
-	if [ $(xssstate -s) != "disabled" ];
-	then
+	monitor_state=$(xset q|grep "Monitor is"|awk '{print $3}')
+	if [ $(xssstate -s) != "disabled" ] && [ $monitor_state == "On" ]; then
 		tosleep=$(($(xssstate -t) / 1000))
-		if [ $tosleep -le 0 ];
-		then
+		if [ $tosleep -le 0 ]; then
 			$cmd
+			sleep $otimeout
+			if [ $(pgrep i3lock) -gt 0 ] && [ $monitor_state == "On" ]; then
+				xset dpms force off
+			fi
 		else
 			sleep $tosleep
 		fi
