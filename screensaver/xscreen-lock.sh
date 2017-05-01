@@ -2,18 +2,18 @@
 
 # Requirements: xssstate, i3lock
 
-# Set timeout for screensaver
-timeout="300"
 # Set timeout for turning off monitor(s)
-otimeout="60"
+otimeout="300"
+# Set timeout for screensaver
+timeout="60"
 
 if [ -f "/tmp/xscreen-lock" ]; then
 	exit 0
 fi
 touch /tmp/xscreen-lock
 
-# Use xset s $timeout to control the timeout when this will run.
-xset s $timeout
+# Use xset s $otimeout to control the timeout when this will run.
+xset s $otimeout
 
 cmd="i3lock"
 # Check if the 1st argument is file
@@ -27,22 +27,29 @@ fi
 
 while true
 do
+	# Get monitor's state
+	monitor_state=$(xset q|grep "Monitor is"|awk '{print $3}')
+
 	# If some blocker programs are found then disable screensaver
-	blockers=$(ps aux|grep -E 'vlc'|grep -v grep|wc -l)
-	if [ $blockers -gt 0 ]; then
-		xset s off
-	else
-		xset s $timeout
+	if [ $monitor_state == "On" ]; then
+		blockers=$(ps aux|grep -E 'vlc'|grep -v grep|wc -l)
+		if [ $blockers -gt 0 ]; then
+			xset s off
+		else
+			xset s $otimeout
+		fi
 	fi
 
-	monitor_state=$(xset q|grep "Monitor is"|awk '{print $3}')
 	if [ $(xssstate -s) != "disabled" ] && [ $monitor_state == "On" ]; then
+		# First turn off screen(s)
 		tosleep=$(($(xssstate -t) / 1000))
 		if [ $tosleep -le 0 ]; then
-			$cmd
-			sleep $otimeout
-			if [ $(pgrep i3lock) -gt 0 ] && [ $monitor_state == "On" ]; then
-				xset dpms force off
+			xset dpms force off
+			# And then lock the screen with screensaver
+			sleep $timeout
+			tosleep=$(($(xssstate -t) / 1000))
+			if [ $tosleep -le 0 ]; then
+				$cmd
 			fi
 		else
 			sleep $tosleep
